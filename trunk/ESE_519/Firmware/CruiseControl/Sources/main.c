@@ -2,6 +2,8 @@
 #include <MC9S12C128.h> /* derivative information */
 #pragma LINK_INFO DERIVATIVE "mc9s12c128"
 #include <string.h>
+#include "stdio.h"
+#include "termio.h"
 
 #include "common.h"
 #include "CAN.h"
@@ -9,11 +11,12 @@
 #include "types.h"
 #include "PLL.h"
 
-#define KP_NUM (5)
+#define KP_NUM (1)
 #define KP_DEN (1)
 #define KI_NUM (1)
-#define KI_DEN (20)
+#define KI_DEN (40)
 
+long count = 0;
 typedef struct _Car
 {
     float gearRatio[8];
@@ -44,6 +47,7 @@ INT8 getGear(INT8 currentGear);
 
 void main(void)
 {
+
     INT8 setSpeed = -1;
     INT8 carSpeed = 0;
 
@@ -53,24 +57,34 @@ void main(void)
 
     INT8 accel;
     INT8 gear = 0;
+    
+    INT8 flag=0;
 
     UINT8 cruiseOn = 0;
 
     AccelMsg accelMsg;
-
+    BrakeMsg brake_msg;
     init();
 
+    TERMIO_Init();
+    
     DDRB = 0xF0;
     PORTB = 0xF0;
 
+   //putchar('H');
     EnableInterrupts;
 
+   
     for(;;)
     {
-        if(carParamsUpdated)
+         //printf("\n Foo \n ");
+        count++;
+        if(carParamsUpdated)     //after receiving parameters from torcs
         {
+             printf("\n mycarinputs updated \n ");
             if(!cruiseOn)
             {
+                 printf("\n Inside carinputs updated cruise off \n ");
                 if(carInputs.gear != -1)
                     gear = (INT8) limit(getGear(gear), 0, 7);
                 else
@@ -82,6 +96,7 @@ void main(void)
             }
             else
             {
+                printf("\n Inside carinputs updated cruise on \n ");
                 error = (setSpeed - carParams.speed);
                 errInteg += error;
                 errInteg = limit(errInteg, -100*KI_DEN/KI_NUM, 100*KI_DEN/KI_NUM);
@@ -96,17 +111,47 @@ void main(void)
                 accelMsg.accel = (UINT8)limit(accel - accelCorrection, 0, 100) ;
                 accelMsg.gear = gear;
                 accelMsg.clutch = 0;
+               
+                 
+                //For braking in ACC
+                brake_msg.brakeFL = (UINT8)limit(accel - accelCorrection, 0, 100) ;
+                brake_msg.brakeFR = (UINT8)limit(accel - accelCorrection, 0, 100) ;
+                brake_msg.brakeRL = (UINT8)limit(accel - accelCorrection, 0, 100) ;
+                brake_msg.brakeRR = (UINT8)limit(accel - accelCorrection, 0, 100) ; 
+          
+              
+         
             }
-            CANTx(CAN_ACCEL_MSG_ID, &accelMsg, sizeof(AccelMsg));
+            //For sending brake message only 
+                if(( carParams.speed > setSpeed) & (flag==1))
+                {
+                    //CANTx(CAN_ACCEL_CORR_MSG_ID,&accel_corr,sizeof(AccelMsg));
+                    CANTx(CAN_BRAKE_MSG_ID,&brake_msg,sizeof(BrakeMsg));
+                 } 
+                  
+                else 
+                {
+                    CANTx(CAN_ACCEL_MSG_ID, &accelMsg, sizeof(AccelMsg));
+                }
             carParamsUpdated = 0;
         }
-        else if(carInputsUpdated)
+        else if(carInputsUpdated)   //after sending it to the torcs 
         {
+            
+            printf("\n  carparamaters updated \n ");
+            //putchar('A');
             if((carInputs.controls & CRUISE) && (carParams.speed > 0))
             {
+                printf("\n Cruise Control Pressed \n ");
+                
                 if(!cruiseOn)
                 {
-                    setSpeed = carParams.speed;
+                    printf("\n Cruise off make it on \n ");
+                    setSpeed = 40;//carParams.speed;
+                    if(carParams.speed > setSpeed)
+                    flag=1;
+                    else
+                    flag=0;
                     cruiseOn = 1;
                     errInteg = 0;
                     PORTB = 0x70;
@@ -114,12 +159,15 @@ void main(void)
             }
             else
             {
+                printf("\n Cruise on make it off \n ") ;
+                flag = 0;
                 cruiseOn = 0;
                 setSpeed = -1;
                 PORTB = 0xF0;
             }
             if(!cruiseOn)
             {
+                printf("\n Cruise off do normal gear shift \n ") ;
                 if(carInputs.gear != -1)
                     gear = (UINT8)limit(getGear(gear), 0, 7);
                 else
