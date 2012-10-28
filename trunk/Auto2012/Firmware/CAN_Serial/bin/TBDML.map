@@ -1,5 +1,5 @@
 
-PROGRAM "C:\Users\mlab\Documents\autonetproject\trunk\Auto2012\Firmware\CAN_Serial\bin\TBDML.abs"
+PROGRAM "C:\Users\hektor\Desktop\AutoPlug-3.0\trunk\Auto2012\Firmware\CAN_Serial\bin\TBDML.abs"
 
 *********************************************************************************************
 TARGET SECTION
@@ -15,11 +15,14 @@ FILE SECTION
 MC9S12C128.c.o                          Model: BANKED,        Lang: ANSI-C
 main.c.o                                Model: BANKED,        Lang: ANSI-C
 Start12.c.o                             Model: BANKED,        Lang: ANSI-C
+EMBEDDED.C.o (ansibi.lib)               Model: BANKED,        Lang: ANSI-C
+PRINTF.C.o (ansibi.lib)                 Model: BANKED,        Lang: ANSI-C
 STRING.C.o (ansibi.lib)                 Model: BANKED,        Lang: ANSI-C
 rtshc12.c.o (ansibi.lib)                Model: BANKED,        Lang: ANSI-C
 CAN.c.o                                 Model: BANKED,        Lang: ANSI-C
 SCI.c.o                                 Model: BANKED,        Lang: ANSI-C
 PLL.c.o                                 Model: BANKED,        Lang: ANSI-C
+termio.c.o                              Model: BANKED,        Lang: ANSI-C
 
 *********************************************************************************************
 STARTUP SECTION
@@ -28,8 +31,8 @@ Entry point: 0xC000 (_Startup)
 _startupData is allocated at 0xC00B and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x500     35
-  _Copy    *toCopyDownBeg 0xC169
+  _Range   pZeroOut       0x500     44
+  _Copy    *toCopyDownBeg 0xC249
 } _startupData;
 
 *********************************************************************************************
@@ -38,9 +41,11 @@ Section Name                    Size  Type     From       To       Segment
 ---------------------------------------------------------------------------------------------
 .init                             11     R     0xC000     0xC00A   ROM_C000
 .startData                        10     R     0xC00B     0xC014   ROM_C000
-NON_BANKED                       340     R     0xC015     0xC168   ROM_C000
-.copy                              2     R     0xC169     0xC16A   ROM_C000
-.text                            513     R   0x388000   0x388200   PAGE_38
+.rodata                          116     R     0xC015     0xC088   ROM_C000
+.rodata1                          13     R     0xC089     0xC095   ROM_C000
+NON_BANKED                       435     R     0xC096     0xC248   ROM_C000
+.copy                              2     R     0xC249     0xC24A   ROM_C000
+.text                           1732     R   0x388000   0x3886C3   PAGE_38
 .stack                           256   R/W      0x400      0x4FF   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
 .abs_section_9                     1   N/I        0x9        0x9   .absSeg1
@@ -265,13 +270,13 @@ NON_BANKED                       340     R     0xC015     0xC168   ROM_C000
 .abs_section_17e                   2   N/I      0x17E      0x17F   .absSeg220
 .abs_section_ffd6                  2     R     0xFFD6     0xFFD7   .absSeg221
 .abs_section_ffb2                  2     R     0xFFB2     0xFFB3   .absSeg222
-.bss                               8   R/W      0x500      0x507   RAM
-.common                           27   R/W      0x508      0x522   RAM
+.bss                              15   R/W      0x500      0x50E   RAM
+.common                           29   R/W      0x50F      0x52B   RAM
 .vectSeg223_vect                   2     R     0xFFFE     0xFFFF   .vectSeg223
 
 Summary of section sizes per section type:
-READ_ONLY (R):         372 (dec:      882)
-READ_WRITE (R/W):      123 (dec:      291)
+READ_ONLY (R):         915 (dec:     2325)
+READ_WRITE (R/W):      12C (dec:      300)
 NO_INIT (N/I):         104 (dec:      260)
 
 *********************************************************************************************
@@ -510,11 +515,12 @@ MODULE:                 -- MC9S12C128.c.o --
      _CANTXTSR                                  17E       2       2       0   .abs_section_17e
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     main                                    388000      48      72       2   .text       
-     init                                    388048       D      13       2   .text       
-     SCIRx_vect                                C015      A7     167       2   NON_BANKED  
-     CANRx_vect                                C0BC      99     153       1   NON_BANKED  
+     main                                    388000      57      87       2   .text       
+     init                                    388057       D      13       2   .text       
+     SCIRx_vect                                C096      A7     167       2   NON_BANKED  
+     CANRx_vect                                C13D      99     153       1   NON_BANKED  
 - VARIABLES:
+     STRING.Distance..d..6                     C089       D      13       1   .rodata1    
      carInputsUpdated                           500       1       1       3   .bss        
      carParamsUpdated                           501       1       1       4   .bss        
      serialRxState.1                            502       1       1       4   .bss        
@@ -524,39 +530,63 @@ MODULE:                 -- main.c.o --
      rxPtr.5                                    506       2       2       4   .bss        
      _Vector_20                                FFD6       2       2       0   .abs_section_ffd6
      _Vector_38                                FFB2       2       2       0   .abs_section_ffb2
-     carParams                                  508       8       8       2   .common     
-     torcsInput                                 510       8       8       9   .common     
-     serialRxBuffer                             518       A      10       2   .common     
+     carParams                                  50F       9       9       3   .common     
+     torcsInput                                 518       8       8       9   .common     
+     serialRxBuffer                             520       B      11       2   .common     
 MODULE:                 -- Start12.c.o --
 - PROCEDURES:
-     Init                                    388055      3E      62       2   .text       
+     Init                                    388064      3E      62       2   .text       
      _Startup                                  C000       B      11       0   .init       
 - VARIABLES:
      _startupData                              C00B       6       6       3   .startData  
 - LABELS:
      __SEG_END_SSTACK                           500       0       0       1               
+MODULE:                 -- EMBEDDED.C.o (ansibi.lib) --
+- PROCEDURES:
+     printf                                  3880A2      17      23       2   .text       
+- VARIABLES:
+MODULE:                 -- PRINTF.C.o (ansibi.lib) --
+- PROCEDURES:
+     vprintf                                 3880B9     47B    1147      57   .text       
+     _out                                    388534       C      12       2   .text       
+     set_printf                              388540       F      15       2   .text       
+- VARIABLES:
+     pow10                                     C015      28      40       4   .rodata     
+     pow16                                     C03D      20      32       4   .rodata     
+     pow8                                      C05D      2C      44       4   .rodata     
+     pbuf                                       508       7       7      11   .bss        
 MODULE:                 -- STRING.C.o (ansibi.lib) --
 - PROCEDURES:
-     _memcpy_8bitCount                       388093      1C      28      12   .text       
+     _memcpy_8bitCount                       38854F      1C      28      12   .text       
 - VARIABLES:
 MODULE:                 -- rtshc12.c.o (ansibi.lib) --
 - PROCEDURES:
-     _CASE_CHECKED_BYTE                        C155      14      20       1   NON_BANKED  
+     _LCMP_P                                   C1D6      15      21       3   NON_BANKED  
+     _LNEG                                     C1EB       D      13       1   NON_BANKED  
+     _ILSEXT                                   C1F8       7       7       2   NON_BANKED  
+     _CASE_DIRECT_BYTE                         C1FF       5       5       1   NON_BANKED  
+     _CASE_CHECKED_BYTE                        C204      14      20       1   NON_BANKED  
+     _CASE_SEARCH_8                            C218      17      23       1   NON_BANKED  
+     _CASE_SEARCH_8_BYTE                       C22F      1A      26       1   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- CAN.c.o --
 - PROCEDURES:
-     CANInit                                 3880AF      47      71       2   .text       
-     CANTx                                   3880F6      6E     110       2   .text       
+     CANInit                                 38856B      47      71       2   .text       
+     CANTx                                   3885B2      6E     110       2   .text       
 - VARIABLES:
 MODULE:                 -- SCI.c.o --
 - PROCEDURES:
-     SCIInit                                 388164       E      14       2   .text       
-     SCITxPkt                                388172      7C     124       2   .text       
+     SCIInit                                 388620       E      14       2   .text       
+     SCITxPkt                                38862E      7C     124       2   .text       
 - VARIABLES:
-     SCIDataFlag                                522       1       1       1   .common     
+     SCIDataFlag                                52B       1       1       1   .common     
 MODULE:                 -- PLL.c.o --
 - PROCEDURES:
-     setclk24                                3881EE      13      19       2   .text       
+     setclk24                                3886AA      13      19       2   .text       
+- VARIABLES:
+MODULE:                 -- termio.c.o --
+- PROCEDURES:
+     TERMIO_PutChar                          3886BD       7       7       3   .text       
 - VARIABLES:
 
 *********************************************************************************************
@@ -564,27 +594,36 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   MC9S12C128.c.o                             260      0      0
-  main.c.o                                    34    405      4
+  main.c.o                                    36    420     17
   Start12.c.o                                  0     73      0
+  EMBEDDED.C.o (ansibi.lib)                    0     23      0
+  PRINTF.C.o (ansibi.lib)                      7   1174    116
   STRING.C.o (ansibi.lib)                      0     28      0
-  rtshc12.c.o (ansibi.lib)                     0     20      0
+  rtshc12.c.o (ansibi.lib)                     0    115      0
   CAN.c.o                                      0    181      0
   SCI.c.o                                      1    138      0
   PLL.c.o                                      0     19      0
+  termio.c.o                                   0      7      0
   other                                      256     12      2
 
 *********************************************************************************************
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  main init Init _memcpy_8bitCount CANInit CANTx SCIInit SCITxPkt setclk24 
+  main init Init printf vprintf _out set_printf _memcpy_8bitCount CANInit 
+  CANTx SCIInit SCITxPkt setclk24 TERMIO_PutChar 
 SECTION: ".bss"
   carInputsUpdated carParamsUpdated serialRxState.1 serialDataLength.3 
-  serialRxChksum.4 serialData.2 rxPtr.5 
+  serialRxChksum.4 serialData.2 rxPtr.5 pbuf 
 SECTION: ".init"
   _Startup 
+SECTION: ".rodata"
+  pow10 pow16 pow8 
+SECTION: ".rodata1"
+  STRING.Distance..d..6 
 SECTION: "NON_BANKED"
-  SCIRx_vect CANRx_vect _CASE_CHECKED_BYTE 
+  SCIRx_vect CANRx_vect _LCMP_P _LNEG _ILSEXT _CASE_DIRECT_BYTE 
+  _CASE_CHECKED_BYTE _CASE_SEARCH_8 _CASE_SEARCH_8_BYTE 
 SECTION: ".abs_section_8"
   _PORTE 
 SECTION: ".abs_section_9"
@@ -1266,48 +1305,71 @@ OBJECT LIST SORTED BY ADDRESS
      serialRxChksum.4                           504       1       1       6   .bss        
      serialData.2                               505       1       1       6   .bss        
      rxPtr.5                                    506       2       2       4   .bss        
-     carParams                                  508       8       8       2   .common     
-     torcsInput                                 510       8       8       9   .common     
-     serialRxBuffer                             518       A      10       2   .common     
-     SCIDataFlag                                522       1       1       1   .common     
+     pbuf                                       508       7       7      11   .bss        
+     carParams                                  50F       9       9       3   .common     
+     torcsInput                                 518       8       8       9   .common     
+     serialRxBuffer                             520       B      11       2   .common     
+     SCIDataFlag                                52B       1       1       1   .common     
      _Startup                                  C000       B      11       0   .init       
-     SCIRx_vect                                C015      A7     167       2   NON_BANKED  
-     CANRx_vect                                C0BC      99     153       1   NON_BANKED  
-     _CASE_CHECKED_BYTE                        C155      14      20       1   NON_BANKED  
+     pow10                                     C015      28      40       4   .rodata     
+     pow16                                     C03D      20      32       4   .rodata     
+     pow8                                      C05D      2C      44       4   .rodata     
+     STRING.Distance..d..6                     C089       D      13       1   .rodata1    
+     SCIRx_vect                                C096      A7     167       2   NON_BANKED  
+     CANRx_vect                                C13D      99     153       1   NON_BANKED  
+     _LCMP_P                                   C1D6      15      21       3   NON_BANKED  
+     _LNEG                                     C1EB       D      13       1   NON_BANKED  
+     _ILSEXT                                   C1F8       7       7       2   NON_BANKED  
+     _CASE_DIRECT_BYTE                         C1FF       5       5       1   NON_BANKED  
+     _CASE_CHECKED_BYTE                        C204      14      20       1   NON_BANKED  
+     _CASE_SEARCH_8                            C218      17      23       1   NON_BANKED  
+     _CASE_SEARCH_8_BYTE                       C22F      1A      26       1   NON_BANKED  
      _Vector_38                                FFB2       2       2       0   .abs_section_ffb2
      _Vector_20                                FFD6       2       2       0   .abs_section_ffd6
-     main                                    388000      48      72       2   .text       
-     init                                    388048       D      13       2   .text       
-     Init                                    388055      3E      62       2   .text       
-     _memcpy_8bitCount                       388093      1C      28      12   .text       
-     CANInit                                 3880AF      47      71       2   .text       
-     CANTx                                   3880F6      6E     110       2   .text       
-     SCIInit                                 388164       E      14       2   .text       
-     SCITxPkt                                388172      7C     124       2   .text       
-     setclk24                                3881EE      13      19       2   .text       
+     main                                    388000      57      87       2   .text       
+     init                                    388057       D      13       2   .text       
+     Init                                    388064      3E      62       2   .text       
+     printf                                  3880A2      17      23       2   .text       
+     vprintf                                 3880B9     47B    1147      57   .text       
+     _out                                    388534       C      12       2   .text       
+     set_printf                              388540       F      15       2   .text       
+     _memcpy_8bitCount                       38854F      1C      28      12   .text       
+     CANInit                                 38856B      47      71       2   .text       
+     CANTx                                   3885B2      6E     110       2   .text       
+     SCIInit                                 388620       E      14       2   .text       
+     SCITxPkt                                38862E      7C     124       2   .text       
+     setclk24                                3886AA      13      19       2   .text       
+     TERMIO_PutChar                          3886BD       7       7       3   .text       
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
 ---------------------------------------------------------------------------------------------
 NOT USED PROCEDURES
+EMBEDDED.C.o (ansibi.lib):
+  scanf gets puts fopen fflush fclose fprintf fputs fputc fgetc remove clock 
+  abort exit 
+PRINTF.C.o (ansibi.lib):
+  deposit_char sprintf vsprintf 
 STRING.C.o (ansibi.lib):
   strerror memchr memcmp memcpy2 memcpy memmove memset _memset_clear_8bitCount 
   strlen strset strcat strncat strcpy strncpy strcmp strncmp strchr strrchr 
   strspn strcspn strpbrk strstr strtok strcoll strxfrm 
 rtshc12.c.o (ansibi.lib):
   _BSHL _BSHRS _BSHRU _BDIVMODU _BDIVMODS _ISHL _ISHRU _ISHRS _LSHL _LSHRU 
-  _LSHRS _LADD _LSUB _LAND _LOR _LXOR _LCMP _LCMP_P _LCMP_PP _LNEG _LCOM _LINC 
-  _LDEC _LMUL _LMULU16x32 _LMULS16x32 _lDivMod _LDIVU _NEG_P _LDIVS _LMODU 
-  _LMODS _ILSEXT _COPY _CASE_DIRECT _CASE_DIRECT_BYTE _CASE_CHECKED 
-  _CASE_SEARCH _CASE_SEARCH_BYTE _CASE_SEARCH_8 _CASE_SEARCH_8_BYTE _FCALL 
-  _FPCMP 
+  _LSHRS _LADD _LSUB _LAND _LOR _LXOR _LCMP _LCMP_PP _LCOM _LINC _LDEC _LMUL 
+  _LMULU16x32 _LMULS16x32 _lDivMod _LDIVU _NEG_P _LDIVS _LMODU _LMODS _COPY 
+  _CASE_DIRECT _CASE_CHECKED _CASE_SEARCH _CASE_SEARCH_BYTE _FCALL _FPCMP 
 CAN.c.o:
   CANRx 
 SCI.c.o:
   SCITxBuf SCITx SCITxStr SCIRx 
+termio.c.o:
+  TERMIO_GetChar TERMIO_Init 
 NOT USED VARIABLES
 main.c.o:
   stabmsg 
+EMBEDDED.C.o (ansibi.lib):
+  STRING..1 
 STRING.C.o (ansibi.lib):
   STRING..1 next.2 
 rtshc12.c.o (ansibi.lib):
@@ -1318,7 +1380,7 @@ SCI.c.o:
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC169 ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC249 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1335,9 +1397,16 @@ CANRx_vect                USES _CANRXIDR0 _CANRXIDR1 _CANRXDLR _CANRXDSR0
 _Vector_38                USES CANRx_vect 
 _Vector_20                USES SCIRx_vect 
 main                      USES init carParamsUpdated carParams CANTx 
-                                carInputsUpdated torcsInput _memcpy_8bitCount SCITxPkt 
+                                STRING.Distance..d..6 printf carInputsUpdated torcsInput 
+                                _memcpy_8bitCount SCITxPkt 
 init                      USES setclk24 SCIInit CANInit 
 Init                      USES _startupData 
+printf                    USES TERMIO_PutChar set_printf vprintf 
+vprintf                   USES vprintf _CASE_SEARCH_8_BYTE _CASE_DIRECT_BYTE 
+                                _CASE_SEARCH_8 pbuf _ILSEXT _LNEG pow8 _LCMP_P pow16 pow10 
+                                _out 
+_out                      USES pbuf 
+set_printf                USES pbuf 
 CANInit                   USES _CANCTL1 _CANCTL0 _CANBTR0 _CANBTR1 _CANIDAC 
                                 _CANIDMR0 _CANIDMR1 _CANIDMR2 _CANIDMR3 _CANIDMR4 
                                 _CANIDMR5 _CANIDMR6 _CANIDMR7 _CANRIER 
@@ -1364,6 +1433,28 @@ DEPENDENCY TREE
  |  |       
  |  +- CANTx               
  |  |    
+ |  +- printf              
+ |  |  | 
+ |  |  +- TERMIO_PutChar      
+ |  |  |    
+ |  |  +- set_printf          
+ |  |  |    
+ |  |  +- vprintf             
+ |  |     | 
+ |  |     +- _CASE_SEARCH_8_BYTE 
+ |  |     |    
+ |  |     +- _CASE_DIRECT_BYTE   
+ |  |     |    
+ |  |     +- _CASE_SEARCH_8      
+ |  |     |    
+ |  |     +- _ILSEXT             
+ |  |     |    
+ |  |     +- _LNEG               
+ |  |     |    
+ |  |     +- _LCMP_P             
+ |  |     |    
+ |  |     +- _out                
+ |  |          
  |  +- _memcpy_8bitCount   
  |  |    
  |  +- SCITxPkt            
@@ -1396,6 +1487,6 @@ STATISTIC SECTION
 
 ExeFile:
 --------
-Number of blocks to be downloaded: 7
-Total size of all blocks to be downloaded: 882
+Number of blocks to be downloaded: 9
+Total size of all blocks to be downloaded: 2325
 

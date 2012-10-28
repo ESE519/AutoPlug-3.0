@@ -3,6 +3,7 @@
 #include "common.h"
 #include "CAN.h"
 #pragma LINK_INFO DERIVATIVE "mc9s12c128"
+#include "stdio.h"
 
 void CANInit(void)
 {
@@ -37,12 +38,16 @@ INT8 CANTx(UINT16 identifier, void *data, UINT8 length)
     UINT8 *dataPtr;
     UINT8  txBuf;
 
-    if(!CANTFLG)
+    if(!CANTFLG) { 
+        printf("\n Tx Screwed ");
         return -1;  // All TX buffers full
-
-    if(length > 8)
+    }
+    if(length > 9){  // changed from 9 to 10 for new distance calculation
+        printf("Doom\n");
         return -1;
-
+    }
+    
+    printf("nNot Doomed \n");
     CANTBSEL = CANTFLG;
 
     txBuf = CANTBSEL;
@@ -75,8 +80,14 @@ INT8 CANRx(UINT16 *identifier, void *buffer)
     UINT8 *bufPtr;
 
     if(!CANRFLG_RXF) // If data received
-        return -1;
-
+    {
+       printf("\n Rx Screwed "); 
+       return -1;
+       
+    }
+    
+    printf("Not Screwed");
+        
     *identifier = (CANRXIDR0 << 3) + (CANRXIDR1 >> 5);
 
     length = CANRXDLR & 0x0F;

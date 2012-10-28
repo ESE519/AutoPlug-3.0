@@ -17,7 +17,9 @@ CAN.c.o                                 Model: BANKED,        Lang: ANSI-C
 Start12.c.o                             Model: BANKED,        Lang: ANSI-C
 EMBEDDED.C.o (ansib.lib)                Model: BANKED,        Lang: ANSI-C
 PRINTF.C.o (ansib.lib)                  Model: BANKED,        Lang: ANSI-C
+STDLIB.C.o (ansib.lib)                  Model: BANKED,        Lang: ANSI-C
 STRING.C.o (ansib.lib)                  Model: BANKED,        Lang: ANSI-C
+TERMINAL.C.o (ansib.lib)                Model: BANKED,        Lang: ANSI-C
 FADD.C.o (ansib.lib)                    Model: BANKED,        Lang: ANSI-C
 FANSI.C.o (ansib.lib)                   Model: BANKED,        Lang: ANSI-C
 FCMP.C.o (ansib.lib)                    Model: BANKED,        Lang: ANSI-C
@@ -37,8 +39,8 @@ Entry point: 0xC000 (_Startup)
 _startupData is allocated at 0xC00B and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x500     28
-  _Copy    *toCopyDownBeg 0xC76C
+  _Range   pZeroOut       0x500     47
+  _Copy    *toCopyDownBeg 0xC691
 } _startupData;
 
 *********************************************************************************************
@@ -48,10 +50,10 @@ Section Name                    Size  Type     From       To       Segment
 .init                             11     R     0xC000     0xC00A   ROM_C000
 .startData                        10     R     0xC00B     0xC014   ROM_C000
 .rodata                          270     R     0xC015     0xC122   ROM_C000
-.rodata1                         253     R     0xC123     0xC21F   ROM_C000
-NON_BANKED                      1356     R     0xC220     0xC76B   ROM_C000
-.copy                              2     R     0xC76C     0xC76D   ROM_C000
-.text                           3798     R   0x388000   0x388ED5   PAGE_38
+.rodata1                          34     R     0xC123     0xC144   ROM_C000
+NON_BANKED                      1356     R     0xC145     0xC690   ROM_C000
+.copy                              2     R     0xC691     0xC692   ROM_C000
+.text                           3617     R   0x388000   0x388E20   PAGE_38
 .stack                           256   R/W      0x400      0x4FF   RAM
 .abs_section_8                     1   N/I        0x8        0x8   .absSeg0
 .abs_section_9                     1   N/I        0x9        0x9   .absSeg1
@@ -276,12 +278,12 @@ NON_BANKED                      1356     R     0xC220     0xC76B   ROM_C000
 .abs_section_17e                   2   N/I      0x17E      0x17F   .absSeg220
 .abs_section_ffb2                  2     R     0xFFB2     0xFFB3   .absSeg221
 .bss                              14   R/W      0x500      0x50D   RAM
-.common                           14   R/W      0x50E      0x51B   RAM
+.common                           33   R/W      0x50E      0x52E   RAM
 .vectSeg222_vect                   2     R     0xFFFE     0xFFFF   .vectSeg222
 
 Summary of section sizes per section type:
-READ_ONLY (R):        1648 (dec:     5704)
-READ_WRITE (R/W):      11C (dec:      284)
+READ_ONLY (R):        14B8 (dec:     5304)
+READ_WRITE (R/W):      12F (dec:      303)
 NO_INIT (N/I):         104 (dec:      260)
 
 *********************************************************************************************
@@ -521,11 +523,14 @@ MODULE:                 -- MC9S12C128.c.o --
 MODULE:                 -- CAN.c.o --
 - PROCEDURES:
      CANInit                                 388000      47      71       2   .text       
-     CANTx                                   388047      65     101       2   .text       
+     CANTx                                   388047      7D     125       2   .text       
 - VARIABLES:
+     STRING...Tx.Screwed..1                    C123       E      14       1   .rodata1    
+     STRING.Doom..2                            C131       6       6       1   .rodata1    
+     STRING.nNot.Doomed...3                    C137       E      14       1   .rodata1    
 MODULE:                 -- Start12.c.o --
 - PROCEDURES:
-     Init                                    3880AC      29      41       2   .text       
+     Init                                    3880C4      29      41       2   .text       
      _Startup                                  C000       B      11       0   .init       
 - VARIABLES:
      _startupData                              C00B       6       6       3   .startData  
@@ -533,14 +538,15 @@ MODULE:                 -- Start12.c.o --
      __SEG_END_SSTACK                           500       0       0       1               
 MODULE:                 -- EMBEDDED.C.o (ansib.lib) --
 - PROCEDURES:
-     printf                                  3880D5      17      23      16   .text       
+     printf                                  3880ED      17      23       4   .text       
+     fputc                                   388104       9       9       2   .text       
 - VARIABLES:
 MODULE:                 -- PRINTF.C.o (ansib.lib) --
 - PROCEDURES:
-     Ten                                     3880EC      AC     172       5   .text       
-     vprintf                                 388198     933    2355     128   .text       
-     _out                                    388ACB       C      12       2   .text       
-     set_printf                              388AD7       F      15       2   .text       
+     Ten                                     38810D      AC     172       5   .text       
+     vprintf                                 3881B9     933    2355     128   .text       
+     _out                                    388AEC       C      12       2   .text       
+     set_printf                              388AF8       F      15       2   .text       
 - VARIABLES:
      pow10                                     C015      28      40       6   .rodata     
      pow16                                     C03D      20      32       4   .rodata     
@@ -548,106 +554,106 @@ MODULE:                 -- PRINTF.C.o (ansib.lib) --
      fpow10                                    C089      30      48       1   .rodata     
      fpow_10                                   C0B9      30      48       1   .rodata     
      pbuf                                       500       7       7      11   .bss        
+MODULE:                 -- STDLIB.C.o (ansib.lib) --
+- PROCEDURES:
+- VARIABLES:
+     channels                                   50E      12      18       1   .common     
 MODULE:                 -- STRING.C.o (ansib.lib) --
 - PROCEDURES:
-     memcpy                                  388AE6      24      36       2   .text       
+     memcpy                                  388B07      24      36       2   .text       
+- VARIABLES:
+MODULE:                 -- TERMINAL.C.o (ansib.lib) --
+- PROCEDURES:
+     TERM_Write                              388B2B       5       5       2   .text       
 - VARIABLES:
 MODULE:                 -- FADD.C.o (ansib.lib) --
 - PROCEDURES:
-     F_ADDKL                                   C220      67     103       1   NON_BANKED  
-     _FADD                                     C287      15      21       4   NON_BANKED  
-     _FSUB                                     C29C      13      19       1   NON_BANKED  
-     _FNEG                                     C2AF       B      11       1   NON_BANKED  
+     F_ADDKL                                   C145      67     103       1   NON_BANKED  
+     _FADD                                     C1AC      15      21       4   NON_BANKED  
+     _FSUB                                     C1C1      13      19       1   NON_BANKED  
+     _FNEG                                     C1D4       B      11       1   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FANSI.C.o (ansib.lib) --
 - PROCEDURES:
-     F_FREXP                                   C2BA      1F      31       1   NON_BANKED  
-     frexpf                                    C2D9      19      25       1   NON_BANKED  
+     F_FREXP                                   C1DF      1F      31       1   NON_BANKED  
+     frexpf                                    C1FE      19      25       1   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FCMP.C.o (ansib.lib) --
 - PROCEDURES:
-     _FCMP                                     C2F2      26      38       4   NON_BANKED  
+     _FCMP                                     C217      26      38       4   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FCONV.C.o (ansib.lib) --
 - PROCEDURES:
-     F_TOLONGK                                 C318      33      51       1   NON_BANKED  
-     F_FRLONGK                                 C34B      1F      31       2   NON_BANKED  
-     _FSFLOAT                                  C36A      12      18       1   NON_BANKED  
-     _FUFLOAT                                  C37C      12      18       2   NON_BANKED  
-     _FSTRUNC                                  C38E      11      17       1   NON_BANKED  
-     _FUTRUNC                                  C39F       3       3       2   NON_BANKED  
+     F_TOLONGK                                 C23D      33      51       1   NON_BANKED  
+     F_FRLONGK                                 C270      1F      31       2   NON_BANKED  
+     _FSFLOAT                                  C28F      12      18       1   NON_BANKED  
+     _FUFLOAT                                  C2A1      12      18       2   NON_BANKED  
+     _FSTRUNC                                  C2B3      11      17       1   NON_BANKED  
+     _FUTRUNC                                  C2C4       3       3       2   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FMUL.C.o (ansib.lib) --
 - PROCEDURES:
-     F_DIVKL                                   C3A2      8E     142       1   NON_BANKED  
-     F_MULKL                                   C430      58      88       1   NON_BANKED  
-     _FMUL                                     C488      14      20      11   NON_BANKED  
-     _FDIV                                     C49C      1E      30       2   NON_BANKED  
+     F_DIVKL                                   C2C7      8E     142       1   NON_BANKED  
+     F_MULKL                                   C355      58      88       1   NON_BANKED  
+     _FMUL                                     C3AD      14      20      11   NON_BANKED  
+     _FDIV                                     C3C1      1E      30       2   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- FREGS.C.o (ansib.lib) --
 - PROCEDURES:
-     F_PULK                                    C4BA      15      21       4   NON_BANKED  
-     F_PULL                                    C4CF      15      21       4   NON_BANKED  
-     F_PSHK                                    C4E4      13      19       6   NON_BANKED  
-     F_TLK                                     C4F7       D      13       1   NON_BANKED  
-     F_XGKL                                    C504      21      33       2   NON_BANKED  
-     F_CLRK                                    C525       B      11       2   NON_BANKED  
-     F_MAXK                                    C530       9       9       2   NON_BANKED  
-     F_NORMK                                   C539      3E      62       4   NON_BANKED  
+     F_PULK                                    C3DF      15      21       4   NON_BANKED  
+     F_PULL                                    C3F4      15      21       4   NON_BANKED  
+     F_PSHK                                    C409      13      19       6   NON_BANKED  
+     F_TLK                                     C41C       D      13       1   NON_BANKED  
+     F_XGKL                                    C429      21      33       2   NON_BANKED  
+     F_CLRK                                    C44A       B      11       2   NON_BANKED  
+     F_MAXK                                    C455       9       9       2   NON_BANKED  
+     F_NORMK                                   C45E      3E      62       4   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- rtshc12.c.o (ansib.lib) --
 - PROCEDURES:
-     _BDIVMODS                                 C577       B      11       3   NON_BANKED  
-     _LCMP_P                                   C582      15      21       3   NON_BANKED  
-     _LNEG                                     C597       D      13       1   NON_BANKED  
-     _LINC                                     C5A4       5       5       1   NON_BANKED  
-     _lDivMod                                  C5A9      BE     190       2   NON_BANKED  
-     _LDIVU                                    C667       E      14       1   NON_BANKED  
-     _NEG_P                                    C675       F      15       1   NON_BANKED  
-     _LMODU                                    C684      11      17       1   NON_BANKED  
-     _ILSEXT                                   C695       7       7       2   NON_BANKED  
-     _CASE_DIRECT_BYTE                         C69C       5       5       1   NON_BANKED  
-     _CASE_SEARCH_8                            C6A1      17      23       1   NON_BANKED  
-     _CASE_SEARCH_8_BYTE                       C6B8      1A      26       1   NON_BANKED  
+     _BDIVMODS                                 C49C       B      11       3   NON_BANKED  
+     _LCMP_P                                   C4A7      15      21       3   NON_BANKED  
+     _LNEG                                     C4BC       D      13       1   NON_BANKED  
+     _LINC                                     C4C9       5       5       1   NON_BANKED  
+     _lDivMod                                  C4CE      BE     190       2   NON_BANKED  
+     _LDIVU                                    C58C       E      14       1   NON_BANKED  
+     _NEG_P                                    C59A       F      15       1   NON_BANKED  
+     _LMODU                                    C5A9      11      17       1   NON_BANKED  
+     _ILSEXT                                   C5BA       7       7       2   NON_BANKED  
+     _CASE_DIRECT_BYTE                         C5C1       5       5       1   NON_BANKED  
+     _CASE_SEARCH_8                            C5C6      17      23       1   NON_BANKED  
+     _CASE_SEARCH_8_BYTE                       C5DD      1A      26       1   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- VREGS.C.o (ansib.lib) --
 - PROCEDURES:
-     L_NEGK                                    C6D2       7       7       2   NON_BANKED  
-     L_PSHK                                    C6D9       8       8       1   NON_BANKED  
-     UL_PULK                                   C6E1       3       3       1   NON_BANKED  
-     SL_PULK                                   C6E4       A      10       1   NON_BANKED  
+     L_NEGK                                    C5F7       7       7       2   NON_BANKED  
+     L_PSHK                                    C5FE       8       8       1   NON_BANKED  
+     UL_PULK                                   C606       3       3       1   NON_BANKED  
+     SL_PULK                                   C609       A      10       1   NON_BANKED  
 - VARIABLES:
 MODULE:                 -- main.c.o --
 - PROCEDURES:
-     main                                    388B0A     2B9     697      35   .text       
-     getGear                                 388DC3      E6     230       4   .text       
-     init                                    388EA9       9       9       2   .text       
-     CANRx_vect                                C6EE      7E     126       1   NON_BANKED  
+     main                                    388B30     1DE     478      16   .text       
+     getGear                                 388D0E      E6     230       4   .text       
+     init                                    388DF4       9       9       2   .text       
+     CANRx_vect                                C613      7E     126       1   NON_BANKED  
 - VARIABLES:
      car                                       C0E9      3A      58      15   .rodata     
-     STRING...mycarinputs.update.1             C123      19      25       1   .rodata1    
-     STRING...Inside.carinputs.u.2             C13C      29      41       1   .rodata1    
-     STRING...Inside.carinputs.u.3             C165      28      40       1   .rodata1    
-     STRING....carparamaters.upd.4             C18D      1C      28       1   .rodata1    
-     STRING...Cruise.Control.Pre.5             C1A9      1C      28       1   .rodata1    
-     STRING...Cruise.off.make.it.6             C1C5      1B      27       1   .rodata1    
-     STRING...Cruise.on.make.it..7             C1E0      1B      27       1   .rodata1    
-     STRING...Cruise.off.do.norm.8             C1FB      25      37       1   .rodata1    
      count                                      507       4       4       4   .bss        
      carInputsUpdated                           50B       1       1       4   .bss        
      carParamsUpdated                           50C       1       1       4   .bss        
      accelCorrection                            50D       1       1       6   .bss        
      _Vector_38                                FFB2       2       2       0   .abs_section_ffb2
-     carInputs                                  50E       6       6       8   .common     
-     carParams                                  514       8       8       6   .common     
+     carInputs                                  520       6       6       8   .common     
+     carParams                                  526       9       9       4   .common     
 MODULE:                 -- PLL.c.o --
 - PROCEDURES:
-     setclk24                                388EB2      13      19       2   .text       
+     setclk24                                388DFD      13      19       2   .text       
 - VARIABLES:
 MODULE:                 -- termio.c.o --
 - PROCEDURES:
-     TERMIO_PutChar                          388EC5       9       9       3   .text       
-     TERMIO_Init                             388ECE       8       8       2   .text       
+     TERMIO_PutChar                          388E10       9       9       5   .text       
+     TERMIO_Init                             388E19       8       8       2   .text       
 - VARIABLES:
 
 *********************************************************************************************
@@ -655,11 +661,13 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   MC9S12C128.c.o                             260      0      0
-  CAN.c.o                                      0    172      0
+  CAN.c.o                                      0    196     34
   Start12.c.o                                  0     52      0
-  EMBEDDED.C.o (ansib.lib)                     0     23      0
+  EMBEDDED.C.o (ansib.lib)                     0     32      0
   PRINTF.C.o (ansib.lib)                       7   2554    212
+  STDLIB.C.o (ansib.lib)                      18      0      0
   STRING.C.o (ansib.lib)                       0     36      0
+  TERMINAL.C.o (ansib.lib)                     0      5      0
   FADD.C.o (ansib.lib)                         0    154      0
   FANSI.C.o (ansib.lib)                        0     56      0
   FCMP.C.o (ansib.lib)                         0     38      0
@@ -668,7 +676,7 @@ MODULE STATISTIC
   FREGS.C.o (ansib.lib)                        0    189      0
   rtshc12.c.o (ansib.lib)                      0    347      0
   VREGS.C.o (ansib.lib)                        0     28      0
-  main.c.o                                    21   1062    313
+  main.c.o                                    22    843     60
   PLL.c.o                                      0     19      0
   termio.c.o                                   0     17      0
   other                                      256     12      2
@@ -677,8 +685,8 @@ MODULE STATISTIC
 SECTION USE IN OBJECT-ALLOCATION SECTION
 ---------------------------------------------------------------------------------------------
 SECTION: ".text"
-  CANInit CANTx Init printf Ten vprintf _out set_printf memcpy main getGear 
-  init setclk24 TERMIO_PutChar TERMIO_Init 
+  CANInit CANTx Init printf fputc Ten vprintf _out set_printf memcpy 
+  TERM_Write main getGear init setclk24 TERMIO_PutChar TERMIO_Init 
 SECTION: ".bss"
   pbuf count carInputsUpdated carParamsUpdated accelCorrection 
 SECTION: ".init"
@@ -686,10 +694,7 @@ SECTION: ".init"
 SECTION: ".rodata"
   pow10 pow16 pow8 fpow10 fpow_10 car 
 SECTION: ".rodata1"
-  STRING...mycarinputs.update.1 STRING...Inside.carinputs.u.2 
-  STRING...Inside.carinputs.u.3 STRING....carparamaters.upd.4 
-  STRING...Cruise.Control.Pre.5 STRING...Cruise.off.make.it.6 
-  STRING...Cruise.on.make.it..7 STRING...Cruise.off.do.norm.8 
+  STRING...Tx.Screwed..1 STRING.Doom..2 STRING.nNot.Doomed...3 
 SECTION: "NON_BANKED"
   F_ADDKL _FADD _FSUB _FNEG F_FREXP frexpf _FCMP F_TOLONGK F_FRLONGK _FSFLOAT 
   _FUFLOAT _FSTRUNC _FUTRUNC F_DIVKL F_MULKL _FMUL _FDIV F_PULK F_PULL F_PSHK 
@@ -1139,7 +1144,7 @@ SECTION: ".abs_section_16e"
 SECTION: ".abs_section_17e"
   _CANTXTSR 
 SECTION: ".common"
-  carInputs carParams 
+  channels carInputs carParams 
 SECTION: ".abs_section_ffb2"
   _Vector_38 
 
@@ -1373,8 +1378,9 @@ OBJECT LIST SORTED BY ADDRESS
      carInputsUpdated                           50B       1       1       4   .bss        
      carParamsUpdated                           50C       1       1       4   .bss        
      accelCorrection                            50D       1       1       6   .bss        
-     carInputs                                  50E       6       6       8   .common     
-     carParams                                  514       8       8       6   .common     
+     channels                                   50E      12      18       1   .common     
+     carInputs                                  520       6       6       8   .common     
+     carParams                                  526       9       9       4   .common     
      _Startup                                  C000       B      11       0   .init       
      pow10                                     C015      28      40       6   .rodata     
      pow16                                     C03D      20      32       4   .rodata     
@@ -1382,72 +1388,69 @@ OBJECT LIST SORTED BY ADDRESS
      fpow10                                    C089      30      48       1   .rodata     
      fpow_10                                   C0B9      30      48       1   .rodata     
      car                                       C0E9      3A      58      15   .rodata     
-     STRING...mycarinputs.update.1             C123      19      25       1   .rodata1    
-     STRING...Inside.carinputs.u.2             C13C      29      41       1   .rodata1    
-     STRING...Inside.carinputs.u.3             C165      28      40       1   .rodata1    
-     STRING....carparamaters.upd.4             C18D      1C      28       1   .rodata1    
-     STRING...Cruise.Control.Pre.5             C1A9      1C      28       1   .rodata1    
-     STRING...Cruise.off.make.it.6             C1C5      1B      27       1   .rodata1    
-     STRING...Cruise.on.make.it..7             C1E0      1B      27       1   .rodata1    
-     STRING...Cruise.off.do.norm.8             C1FB      25      37       1   .rodata1    
-     F_ADDKL                                   C220      67     103       1   NON_BANKED  
-     _FADD                                     C287      15      21       4   NON_BANKED  
-     _FSUB                                     C29C      13      19       1   NON_BANKED  
-     _FNEG                                     C2AF       B      11       1   NON_BANKED  
-     F_FREXP                                   C2BA      1F      31       1   NON_BANKED  
-     frexpf                                    C2D9      19      25       1   NON_BANKED  
-     _FCMP                                     C2F2      26      38       4   NON_BANKED  
-     F_TOLONGK                                 C318      33      51       1   NON_BANKED  
-     F_FRLONGK                                 C34B      1F      31       2   NON_BANKED  
-     _FSFLOAT                                  C36A      12      18       1   NON_BANKED  
-     _FUFLOAT                                  C37C      12      18       2   NON_BANKED  
-     _FSTRUNC                                  C38E      11      17       1   NON_BANKED  
-     _FUTRUNC                                  C39F       3       3       2   NON_BANKED  
-     F_DIVKL                                   C3A2      8E     142       1   NON_BANKED  
-     F_MULKL                                   C430      58      88       1   NON_BANKED  
-     _FMUL                                     C488      14      20      11   NON_BANKED  
-     _FDIV                                     C49C      1E      30       2   NON_BANKED  
-     F_PULK                                    C4BA      15      21       4   NON_BANKED  
-     F_PULL                                    C4CF      15      21       4   NON_BANKED  
-     F_PSHK                                    C4E4      13      19       6   NON_BANKED  
-     F_TLK                                     C4F7       D      13       1   NON_BANKED  
-     F_XGKL                                    C504      21      33       2   NON_BANKED  
-     F_CLRK                                    C525       B      11       2   NON_BANKED  
-     F_MAXK                                    C530       9       9       2   NON_BANKED  
-     F_NORMK                                   C539      3E      62       4   NON_BANKED  
-     _BDIVMODS                                 C577       B      11       3   NON_BANKED  
-     _LCMP_P                                   C582      15      21       3   NON_BANKED  
-     _LNEG                                     C597       D      13       1   NON_BANKED  
-     _LINC                                     C5A4       5       5       1   NON_BANKED  
-     _lDivMod                                  C5A9      BE     190       2   NON_BANKED  
-     _LDIVU                                    C667       E      14       1   NON_BANKED  
-     _NEG_P                                    C675       F      15       1   NON_BANKED  
-     _LMODU                                    C684      11      17       1   NON_BANKED  
-     _ILSEXT                                   C695       7       7       2   NON_BANKED  
-     _CASE_DIRECT_BYTE                         C69C       5       5       1   NON_BANKED  
-     _CASE_SEARCH_8                            C6A1      17      23       1   NON_BANKED  
-     _CASE_SEARCH_8_BYTE                       C6B8      1A      26       1   NON_BANKED  
-     L_NEGK                                    C6D2       7       7       2   NON_BANKED  
-     L_PSHK                                    C6D9       8       8       1   NON_BANKED  
-     UL_PULK                                   C6E1       3       3       1   NON_BANKED  
-     SL_PULK                                   C6E4       A      10       1   NON_BANKED  
-     CANRx_vect                                C6EE      7E     126       1   NON_BANKED  
+     STRING...Tx.Screwed..1                    C123       E      14       1   .rodata1    
+     STRING.Doom..2                            C131       6       6       1   .rodata1    
+     STRING.nNot.Doomed...3                    C137       E      14       1   .rodata1    
+     F_ADDKL                                   C145      67     103       1   NON_BANKED  
+     _FADD                                     C1AC      15      21       4   NON_BANKED  
+     _FSUB                                     C1C1      13      19       1   NON_BANKED  
+     _FNEG                                     C1D4       B      11       1   NON_BANKED  
+     F_FREXP                                   C1DF      1F      31       1   NON_BANKED  
+     frexpf                                    C1FE      19      25       1   NON_BANKED  
+     _FCMP                                     C217      26      38       4   NON_BANKED  
+     F_TOLONGK                                 C23D      33      51       1   NON_BANKED  
+     F_FRLONGK                                 C270      1F      31       2   NON_BANKED  
+     _FSFLOAT                                  C28F      12      18       1   NON_BANKED  
+     _FUFLOAT                                  C2A1      12      18       2   NON_BANKED  
+     _FSTRUNC                                  C2B3      11      17       1   NON_BANKED  
+     _FUTRUNC                                  C2C4       3       3       2   NON_BANKED  
+     F_DIVKL                                   C2C7      8E     142       1   NON_BANKED  
+     F_MULKL                                   C355      58      88       1   NON_BANKED  
+     _FMUL                                     C3AD      14      20      11   NON_BANKED  
+     _FDIV                                     C3C1      1E      30       2   NON_BANKED  
+     F_PULK                                    C3DF      15      21       4   NON_BANKED  
+     F_PULL                                    C3F4      15      21       4   NON_BANKED  
+     F_PSHK                                    C409      13      19       6   NON_BANKED  
+     F_TLK                                     C41C       D      13       1   NON_BANKED  
+     F_XGKL                                    C429      21      33       2   NON_BANKED  
+     F_CLRK                                    C44A       B      11       2   NON_BANKED  
+     F_MAXK                                    C455       9       9       2   NON_BANKED  
+     F_NORMK                                   C45E      3E      62       4   NON_BANKED  
+     _BDIVMODS                                 C49C       B      11       3   NON_BANKED  
+     _LCMP_P                                   C4A7      15      21       3   NON_BANKED  
+     _LNEG                                     C4BC       D      13       1   NON_BANKED  
+     _LINC                                     C4C9       5       5       1   NON_BANKED  
+     _lDivMod                                  C4CE      BE     190       2   NON_BANKED  
+     _LDIVU                                    C58C       E      14       1   NON_BANKED  
+     _NEG_P                                    C59A       F      15       1   NON_BANKED  
+     _LMODU                                    C5A9      11      17       1   NON_BANKED  
+     _ILSEXT                                   C5BA       7       7       2   NON_BANKED  
+     _CASE_DIRECT_BYTE                         C5C1       5       5       1   NON_BANKED  
+     _CASE_SEARCH_8                            C5C6      17      23       1   NON_BANKED  
+     _CASE_SEARCH_8_BYTE                       C5DD      1A      26       1   NON_BANKED  
+     L_NEGK                                    C5F7       7       7       2   NON_BANKED  
+     L_PSHK                                    C5FE       8       8       1   NON_BANKED  
+     UL_PULK                                   C606       3       3       1   NON_BANKED  
+     SL_PULK                                   C609       A      10       1   NON_BANKED  
+     CANRx_vect                                C613      7E     126       1   NON_BANKED  
      _Vector_38                                FFB2       2       2       0   .abs_section_ffb2
      CANInit                                 388000      47      71       2   .text       
-     CANTx                                   388047      65     101       2   .text       
-     Init                                    3880AC      29      41       2   .text       
-     printf                                  3880D5      17      23      16   .text       
-     Ten                                     3880EC      AC     172       5   .text       
-     vprintf                                 388198     933    2355     128   .text       
-     _out                                    388ACB       C      12       2   .text       
-     set_printf                              388AD7       F      15       2   .text       
-     memcpy                                  388AE6      24      36       2   .text       
-     main                                    388B0A     2B9     697      35   .text       
-     getGear                                 388DC3      E6     230       4   .text       
-     init                                    388EA9       9       9       2   .text       
-     setclk24                                388EB2      13      19       2   .text       
-     TERMIO_PutChar                          388EC5       9       9       3   .text       
-     TERMIO_Init                             388ECE       8       8       2   .text       
+     CANTx                                   388047      7D     125       2   .text       
+     Init                                    3880C4      29      41       2   .text       
+     printf                                  3880ED      17      23       4   .text       
+     fputc                                   388104       9       9       2   .text       
+     Ten                                     38810D      AC     172       5   .text       
+     vprintf                                 3881B9     933    2355     128   .text       
+     _out                                    388AEC       C      12       2   .text       
+     set_printf                              388AF8       F      15       2   .text       
+     memcpy                                  388B07      24      36       2   .text       
+     TERM_Write                              388B2B       5       5       2   .text       
+     main                                    388B30     1DE     478      16   .text       
+     getGear                                 388D0E      E6     230       4   .text       
+     init                                    388DF4       9       9       2   .text       
+     setclk24                                388DFD      13      19       2   .text       
+     TERMIO_PutChar                          388E10       9       9       5   .text       
+     TERMIO_Init                             388E19       8       8       2   .text       
 
 *********************************************************************************************
 UNUSED-OBJECTS SECTION
@@ -1456,14 +1459,20 @@ NOT USED PROCEDURES
 CAN.c.o:
   CANRx 
 EMBEDDED.C.o (ansib.lib):
-  scanf gets puts fopen fflush fclose fprintf fputs fputc fgetc remove clock 
-  abort exit 
+  scanf gets puts fopen fflush fclose fprintf fputs fgetc remove clock abort 
+  exit 
 PRINTF.C.o (ansib.lib):
   deposit_char sprintf vsprintf 
+STDLIB.C.o (ansib.lib):
+  atexit getenv system mblen mbtowc wctomb mbstowcs wcstombs CheckCharWithBase 
+  _strtoul strtoul _strtol strtol _strtod strtod _itoa bsearch swap qsort div 
+  ldiv abs labs rand srand 
 STRING.C.o (ansib.lib):
   strerror memchr memcmp memcpy2 _memcpy_8bitCount memmove memset 
   _memset_clear_8bitCount strlen strset strcat strncat strcpy strncpy strcmp 
   strncmp strchr strrchr strspn strcspn strpbrk strstr strtok strcoll strxfrm 
+TERMINAL.C.o (ansib.lib):
+  TERM_Read TERM_ReadString TERM_WriteLn TERM_WriteString TERM_Direct 
 FADD.C.o (ansib.lib):
   _FINC _FDEC _FABS 
 FANSI.C.o (ansib.lib):
@@ -1478,19 +1487,25 @@ rtshc12.c.o (ansib.lib):
 termio.c.o:
   TERMIO_GetChar 
 NOT USED VARIABLES
+CAN.c.o:
+  STRING...Rx.Screwed..4 STRING.Not.Screwed.5 
 EMBEDDED.C.o (ansib.lib):
   STRING..1 
+STDLIB.C.o (ansib.lib):
+  infinity seed errno 
 STRING.C.o (ansib.lib):
   STRING..1 next.2 
 FANSI.C.o (ansib.lib):
   infinity errno 
 rtshc12.c.o (ansib.lib):
   _PowOfTwo_8 _PowOfTwo_16 _PowOfTwo_32 errno 
+main.c.o:
+  clearance 
 
 *********************************************************************************************
 COPYDOWN SECTION
 ---------------------------------------------------------------------------------------------
-------- ROM-ADDRESS: 0xC76C ---- SIZE       2 ---
+------- ROM-ADDRESS: 0xC691 ---- SIZE       2 ---
 Filling bytes inserted
  0000
 
@@ -1525,10 +1540,12 @@ _Vector_38                USES CANRx_vect
 CANInit                   USES _CANCTL1 _CANCTL0 _CANBTR0 _CANBTR1 _CANIDAC 
                                 _CANIDMR0 _CANIDMR1 _CANIDMR2 _CANIDMR3 _CANIDMR4 
                                 _CANIDMR5 _CANIDMR6 _CANIDMR7 _CANRIER 
-CANTx                     USES _CANTFLG _CANTBSEL _CANTXIDR0 _CANTXIDR1 
-                                _CANTXDLR _CANTXDSR0 
+CANTx                     USES _CANTFLG STRING...Tx.Screwed..1 STRING.Doom..2 
+                                printf STRING.nNot.Doomed...3 _CANTBSEL _CANTXIDR0 
+                                _CANTXIDR1 _CANTXDLR _CANTXDSR0 
 Init                      USES _startupData 
 printf                    USES TERMIO_PutChar set_printf vprintf 
+fputc                     USES TERM_Write 
 Ten                       USES fpow10 fpow_10 Ten _FMUL 
 vprintf                   USES vprintf _CASE_SEARCH_8_BYTE _CASE_DIRECT_BYTE 
                                 _CASE_SEARCH_8 pbuf _ILSEXT _LNEG pow8 _LCMP_P pow16 pow10 
@@ -1536,13 +1553,10 @@ vprintf                   USES vprintf _CASE_SEARCH_8_BYTE _CASE_DIRECT_BYTE
                                 _FUFLOAT _FSUB _LDIVU _FCMP _LMODU _out 
 _out                      USES pbuf 
 set_printf                USES pbuf 
-main                      USES init TERMIO_Init _DDRAB _PORTAB main count 
-                                _LINC carParamsUpdated STRING...mycarinputs.update.1 
-                                printf STRING...Inside.carinputs.u.2 carInputs 
-                                accelCorrection STRING...Inside.carinputs.u.3 carParams CANTx 
-                                carInputsUpdated STRING....carparamaters.upd.4 
-                                STRING...Cruise.Control.Pre.5 STRING...Cruise.off.make.it.6 
-                                STRING...Cruise.on.make.it..7 STRING...Cruise.off.do.norm.8 getGear 
+TERM_Write                USES TERMIO_PutChar 
+main                      USES init TERMIO_Init _DDRAB _PORTAB channels fputc 
+                                main count _LINC carParamsUpdated carInputs 
+                                accelCorrection carParams CANTx carInputsUpdated getGear 
 getGear                   USES carParams _FSFLOAT car _FDIV _FMUL _FCMP 
                                 _FUFLOAT _FADD 
 init                      USES setclk24 CANInit 
@@ -1563,120 +1577,126 @@ DEPENDENCY TREE
  |  |       
  |  +- TERMIO_Init         
  |  |    
+ |  +- fputc               
+ |  |  | 
+ |  |  +- TERM_Write          
+ |  |     | 
+ |  |     +- TERMIO_PutChar      
+ |  |          
  |  +- _LINC               
  |  |    
- |  +- printf              
- |  |  | 
- |  |  +- TERMIO_PutChar      
- |  |  |    
- |  |  +- set_printf          
- |  |  |    
- |  |  +- vprintf             
- |  |     | 
- |  |     +- _CASE_SEARCH_8_BYTE 
- |  |     |    
- |  |     +- _CASE_DIRECT_BYTE   
- |  |     |    
- |  |     +- _CASE_SEARCH_8      
- |  |     |    
- |  |     +- _ILSEXT             
- |  |     |    
- |  |     +- _LNEG               
- |  |     |    
- |  |     +- _LCMP_P             
- |  |     |    
- |  |     +- _FNEG               
- |  |     |    
- |  |     +- frexpf              
- |  |     |  | 
- |  |     |  +- F_PULL              
- |  |     |  |    
- |  |     |  +- F_TLK               
- |  |     |  |    
- |  |     |  +- F_FREXP             
- |  |     |  |  | 
- |  |     |  |  +- F_NORMK             
- |  |     |  |     | 
- |  |     |  |     +- F_MAXK              
- |  |     |  |        | 
- |  |     |  |        +- F_CLRK              
- |  |     |  |             
- |  |     |  +- F_PSHK              
- |  |     |       
- |  |     +- _FMUL               
- |  |     |  | 
- |  |     |  +- F_PULK              
- |  |     |  |    
- |  |     |  +- F_PULL               (see above)
- |  |     |  |  
- |  |     |  +- F_MULKL             
- |  |     |  |  | 
- |  |     |  |  +- F_CLRK               (see above)
- |  |     |  |  |  
- |  |     |  |  +- F_NORMK              (see above)
- |  |     |  |     
- |  |     |  +- F_PSHK               (see above)
- |  |     |     
- |  |     +- _FADD               
- |  |     |  | 
- |  |     |  +- F_PULK               (see above)
- |  |     |  |  
- |  |     |  +- F_PULL               (see above)
- |  |     |  |  
- |  |     |  +- F_ADDKL             
- |  |     |  |  | 
- |  |     |  |  +- F_XGKL              
- |  |     |  |  |    
- |  |     |  |  +- F_NORMK              (see above)
- |  |     |  |     
- |  |     |  +- F_PSHK               (see above)
- |  |     |     
- |  |     +- _BDIVMODS           
- |  |     |    
- |  |     +- Ten                 
- |  |     |  | 
- |  |     |  +- _FMUL                (see above)
- |  |     |     
- |  |     +- _FUTRUNC            
- |  |     |  | 
- |  |     |  +- _FSTRUNC            
- |  |     |     | 
- |  |     |     +- F_PULK               (see above)
- |  |     |     |  
- |  |     |     +- F_TOLONGK           
- |  |     |     |    
- |  |     |     +- L_PSHK              
- |  |     |        | 
- |  |     |        +- L_NEGK              
- |  |     |           | 
- |  |     |           +- _NEG_P              
- |  |     |                
- |  |     +- _FUFLOAT            
- |  |     |  | 
- |  |     |  +- UL_PULK             
- |  |     |  |    
- |  |     |  +- F_FRLONGK           
- |  |     |  |    
- |  |     |  +- F_PSHK               (see above)
- |  |     |     
- |  |     +- _FSUB               
- |  |     |  | 
- |  |     |  +- _FADD                (see above)
- |  |     |     
- |  |     +- _LDIVU              
- |  |     |  | 
- |  |     |  +- _lDivMod            
- |  |     |       
- |  |     +- _FCMP               
- |  |     |    
- |  |     +- _LMODU              
- |  |     |  | 
- |  |     |  +- _lDivMod             (see above)
- |  |     |     
- |  |     +- _out                
- |  |          
  |  +- CANTx               
- |  |    
+ |  |  | 
+ |  |  +- printf              
+ |  |     | 
+ |  |     +- TERMIO_PutChar       (see above)
+ |  |     |  
+ |  |     +- set_printf          
+ |  |     |    
+ |  |     +- vprintf             
+ |  |        | 
+ |  |        +- _CASE_SEARCH_8_BYTE 
+ |  |        |    
+ |  |        +- _CASE_DIRECT_BYTE   
+ |  |        |    
+ |  |        +- _CASE_SEARCH_8      
+ |  |        |    
+ |  |        +- _ILSEXT             
+ |  |        |    
+ |  |        +- _LNEG               
+ |  |        |    
+ |  |        +- _LCMP_P             
+ |  |        |    
+ |  |        +- _FNEG               
+ |  |        |    
+ |  |        +- frexpf              
+ |  |        |  | 
+ |  |        |  +- F_PULL              
+ |  |        |  |    
+ |  |        |  +- F_TLK               
+ |  |        |  |    
+ |  |        |  +- F_FREXP             
+ |  |        |  |  | 
+ |  |        |  |  +- F_NORMK             
+ |  |        |  |     | 
+ |  |        |  |     +- F_MAXK              
+ |  |        |  |        | 
+ |  |        |  |        +- F_CLRK              
+ |  |        |  |             
+ |  |        |  +- F_PSHK              
+ |  |        |       
+ |  |        +- _FMUL               
+ |  |        |  | 
+ |  |        |  +- F_PULK              
+ |  |        |  |    
+ |  |        |  +- F_PULL               (see above)
+ |  |        |  |  
+ |  |        |  +- F_MULKL             
+ |  |        |  |  | 
+ |  |        |  |  +- F_CLRK               (see above)
+ |  |        |  |  |  
+ |  |        |  |  +- F_NORMK              (see above)
+ |  |        |  |     
+ |  |        |  +- F_PSHK               (see above)
+ |  |        |     
+ |  |        +- _FADD               
+ |  |        |  | 
+ |  |        |  +- F_PULK               (see above)
+ |  |        |  |  
+ |  |        |  +- F_PULL               (see above)
+ |  |        |  |  
+ |  |        |  +- F_ADDKL             
+ |  |        |  |  | 
+ |  |        |  |  +- F_XGKL              
+ |  |        |  |  |    
+ |  |        |  |  +- F_NORMK              (see above)
+ |  |        |  |     
+ |  |        |  +- F_PSHK               (see above)
+ |  |        |     
+ |  |        +- _BDIVMODS           
+ |  |        |    
+ |  |        +- Ten                 
+ |  |        |  | 
+ |  |        |  +- _FMUL                (see above)
+ |  |        |     
+ |  |        +- _FUTRUNC            
+ |  |        |  | 
+ |  |        |  +- _FSTRUNC            
+ |  |        |     | 
+ |  |        |     +- F_PULK               (see above)
+ |  |        |     |  
+ |  |        |     +- F_TOLONGK           
+ |  |        |     |    
+ |  |        |     +- L_PSHK              
+ |  |        |        | 
+ |  |        |        +- L_NEGK              
+ |  |        |           | 
+ |  |        |           +- _NEG_P              
+ |  |        |                
+ |  |        +- _FUFLOAT            
+ |  |        |  | 
+ |  |        |  +- UL_PULK             
+ |  |        |  |    
+ |  |        |  +- F_FRLONGK           
+ |  |        |  |    
+ |  |        |  +- F_PSHK               (see above)
+ |  |        |     
+ |  |        +- _FSUB               
+ |  |        |  | 
+ |  |        |  +- _FADD                (see above)
+ |  |        |     
+ |  |        +- _LDIVU              
+ |  |        |  | 
+ |  |        |  +- _lDivMod            
+ |  |        |       
+ |  |        +- _FCMP               
+ |  |        |    
+ |  |        +- _LMODU              
+ |  |        |  | 
+ |  |        |  +- _lDivMod             (see above)
+ |  |        |     
+ |  |        +- _out                
+ |  |             
  |  +- getGear             
  |     | 
  |     +- _FSFLOAT            
@@ -1730,5 +1750,5 @@ STATISTIC SECTION
 ExeFile:
 --------
 Number of blocks to be downloaded: 8
-Total size of all blocks to be downloaded: 5704
+Total size of all blocks to be downloaded: 5304
 

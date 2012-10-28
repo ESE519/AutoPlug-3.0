@@ -28,7 +28,7 @@ typedef struct _Car
 
 CarInputs carInputs;
 CarParams carParams;
-
+INT8 clearance=0;
 volatile UINT8 carInputsUpdated = 0;
 volatile UINT8 carParamsUpdated = 0;
 volatile UINT8 accelCorrection = 0;
@@ -58,6 +58,11 @@ void main(void)
     INT8 accel;
     INT8 gear = 0;
     
+    float des_clearance = 50;
+    float timegap = 0;
+    float des_speed = 0;
+    float meas_clearance;
+    
     INT8 flag=0;
 
     UINT8 cruiseOn = 0;
@@ -71,20 +76,21 @@ void main(void)
     DDRB = 0xF0;
     PORTB = 0xF0;
 
-   //putchar('H');
+    putchar('H');
     EnableInterrupts;
 
    
     for(;;)
     {
-         //printf("\n Foo \n ");
+        
         count++;
         if(carParamsUpdated)     //after receiving parameters from torcs
         {
-             printf("\n mycarinputs updated \n ");
+             //printf("\n mycarinputs updated \n ");
+             
             if(!cruiseOn)
             {
-                 printf("\n Inside carinputs updated cruise off \n ");
+                 //printf("\n Inside carinputs updated cruise off \n ");
                 if(carInputs.gear != -1)
                     gear = (INT8) limit(getGear(gear), 0, 7);
                 else
@@ -96,7 +102,8 @@ void main(void)
             }
             else
             {
-                printf("\n Inside carinputs updated cruise on \n ");
+                
+                //printf("\n Inside carinputs updated cruise on \n ");
                 error = (setSpeed - carParams.speed);
                 errInteg += error;
                 errInteg = limit(errInteg, -100*KI_DEN/KI_NUM, 100*KI_DEN/KI_NUM);
@@ -114,52 +121,55 @@ void main(void)
                
                  
                 //For braking in ACC
-                brake_msg.brakeFL = (UINT8)limit(accel - accelCorrection, 0, 100) ;
+               /* brake_msg.brakeFL = (UINT8)limit(accel - accelCorrection, 0, 100) ;
                 brake_msg.brakeFR = (UINT8)limit(accel - accelCorrection, 0, 100) ;
                 brake_msg.brakeRL = (UINT8)limit(accel - accelCorrection, 0, 100) ;
                 brake_msg.brakeRR = (UINT8)limit(accel - accelCorrection, 0, 100) ; 
-          
+               */ 
               
          
             }
             //For sending brake message only 
-                if(( carParams.speed > setSpeed) & (flag==1))
+                /*if(( carParams.speed > setSpeed))
                 {
                     //CANTx(CAN_ACCEL_CORR_MSG_ID,&accel_corr,sizeof(AccelMsg));
                     CANTx(CAN_BRAKE_MSG_ID,&brake_msg,sizeof(BrakeMsg));
-                 } 
+                 }*/
                   
-                else 
-                {
+                //else 
+                //{
                     CANTx(CAN_ACCEL_MSG_ID, &accelMsg, sizeof(AccelMsg));
-                }
+                //}
             carParamsUpdated = 0;
         }
         else if(carInputsUpdated)   //after sending it to the torcs 
         {
             
-            printf("\n  carparamaters updated \n ");
+            //printf("\n  carparamaters updated \n ");
             //putchar('A');
             if((carInputs.controls & CRUISE) && (carParams.speed > 0))
             {
-                printf("\n Cruise Control Pressed \n ");
+                //printf("\n Cruise Control Pressed \n ");
                 
+                                
                 if(!cruiseOn)
                 {
-                    printf("\n Cruise off make it on \n ");
-                    setSpeed = 40;//carParams.speed;
-                    if(carParams.speed > setSpeed)
+                    //printf("\n Cruise off make it on \n ");
+                            
+                        setSpeed = carParams.speed;
+                    /*if(carParams.speed > setSpeed)
                     flag=1;
                     else
-                    flag=0;
+                    flag=0;*/
                     cruiseOn = 1;
                     errInteg = 0;
                     PORTB = 0x70;
                 }
+                
             }
             else
             {
-                printf("\n Cruise on make it off \n ") ;
+                //printf("\n Cruise on make it off \n ") ;
                 flag = 0;
                 cruiseOn = 0;
                 setSpeed = -1;
@@ -167,7 +177,7 @@ void main(void)
             }
             if(!cruiseOn)
             {
-                printf("\n Cruise off do normal gear shift \n ") ;
+                //printf("\n Cruise off do normal gear shift \n ") ;
                 if(carInputs.gear != -1)
                     gear = (UINT8)limit(getGear(gear), 0, 7);
                 else
@@ -218,13 +228,15 @@ interrupt 38 void CANRx_vect(void)
 {
     UINT16 identifier;
     UINT8 length;
-
+     
     identifier = (CANRXIDR0 << 3) + (CANRXIDR1 >> 5);
 
+    //printf("\n Identifier : %x " , identifier);
     length = CANRXDLR & 0x0F;
 
     if(identifier == CAN_INPUT_MSG_ID)
     {
+        //printf("\n Can input msg id invoked \n ");
         if(!carInputsUpdated) // Only update when old value has been used
         {
             if(length > sizeof(CarInputs))
@@ -236,6 +248,9 @@ interrupt 38 void CANRx_vect(void)
     }
     else if (identifier == CAN_PARAM_MSG_ID)
     {
+       //  clearance = (INT8)(carParams.distance);
+         //printf("\ndistance %x\r\n",distance);
+        //printf("\n Can param msg id invoked \n ");
         if(!carParamsUpdated) // Only update when old value has been used
         {
             if(length > sizeof(CarParams))
@@ -243,6 +258,7 @@ interrupt 38 void CANRx_vect(void)
 
             memcpy(&carParams, &CANRXDSR0, length);
             carParamsUpdated = 1;
+            //printf("\n Distance from TORCS is %d \n", carParams.distance);
         }
     }
     else if (identifier == CAN_ACCEL_CORR_MSG_ID)

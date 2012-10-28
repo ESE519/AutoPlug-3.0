@@ -23,6 +23,7 @@ typedef struct _CarParams
     INT8 wheelSpeedRL;
     INT8 wheelSpeedRR;
     INT8 yawRate;
+    INT8 distance;
     //INT8 lateralspeed;
     //INT8 lateralacc;
 } CarParams;

@@ -12,6 +12,7 @@
 #include "CAN.h"
 #include "SCI.h"
 #include "types.h"
+#include "stdio.h"
 #include "PLL.h"
 
 CarParams carParams;  //speed | engineRPM | wheel speed (FL,FR,RL,RR) | yaw rate
@@ -43,10 +44,11 @@ interrupt 20 void SCIRx_vect(void)   //receive messages from serial port
     //Check for Errors (Framing, Noise, Parity) 
     if( (status & 0x07) != 0 )
     {
+        
         dummy = SCIDRL;
         return;
     } 
-
+    
     // Good Data 
     serialData = SCIDRL; // load SCI register to data 
     SCIDataFlag = 1;
@@ -58,37 +60,45 @@ interrupt 20 void SCIRx_vect(void)   //receive messages from serial port
             {
                 serialRxChksum = 0xAA;  
                 serialRxState = 1;
+                //printf("Zero");
             }
             break;
 
         case 1:
             if(serialData == 0xCC && serialRxState == 1)
             {
-                serialDataLength = sizeof(CarParams);
+                serialDataLength = sizeof(CarParams);/// + 1;    //Changed by AAK
                 serialRxChksum ^= 0xCC;
                 rxPtr = serialRxBuffer;
                 serialRxState = 2;
+                //printf("One");
+                
             }
             else
             {
                 serialRxState = 0;
+                //printf("One_Else");
             }
             break;
 
         case 2:
             if(serialDataLength > 0)      //copy data to serial buffer
             {
+                //printf("\n SLength %d \n\r ", serialDataLength);
                 *rxPtr = serialData;
                 serialRxChksum ^= serialData;
-                rxPtr++;
+                rxPtr++;     
                 serialDataLength--;
+                //printf("Two");
             }
             else
             {
                 if(serialData == serialRxChksum)
                 {
+                    //printf("2else");
                     if(!carParamsUpdated) // Only update when old value has been used
                     {
+                        //printf("Params created");
                         memcpy(&carParams, serialRxBuffer, sizeof(CarParams));
                         //memcpy(&stabmsg, serialRxBuffer + 8, sizeof(StabMsg));
                         carParamsUpdated = 1;
@@ -159,12 +169,15 @@ void main(void)
     init();
 
     EnableInterrupts;
-
+    
+    
     for(;;)
     {
+        //putchar('H');
         if(carParamsUpdated)   //send simulator's data on CAN bus
         {
             CANTx(CAN_PARAM_MSG_ID, &carParams, sizeof(CarParams));
+            printf("Distance %d\n",carParams.distance);
             //CANTx(CAN_STAB_MSG_ID, &stabmsg, sizeof(StabMsg));
             carParamsUpdated = 0;
         }

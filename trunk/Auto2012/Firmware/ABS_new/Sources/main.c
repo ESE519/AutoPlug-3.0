@@ -23,7 +23,7 @@ volatile UINT8 carParamsUpdated = 0;
 volatile UINT8 carInputsUpdated = 0;
 BrakeMsg brake_msg = {0,0,0,0};
 CarInputs driver_input = {0,0,0,0,0,0};
-UINT8 buffer[8]; // recives the CAN DATA
+UINT8 buffer[9]; // recives the CAN DATA   // changed from 8 to 9
 const INT16 abs_threshold = 2;
 const INT16 tc_threshold = 2;
 const INT16 yawRate_threshold = 10;
@@ -56,7 +56,7 @@ void main(void)
             brake_msg.brakeRR = driver_input.brake;
 
            // comment out all old stuff
-           /* if((driver_input.controls & STABILITY) && (abs(car.yawRate) > yawRate_threshold))
+            if((driver_input.controls & STABILITY) && (abs(car.yawRate) > yawRate_threshold))
             {
                 stabilityControl();
                 Abs();
@@ -66,9 +66,9 @@ void main(void)
                 Abs();
 
             if((driver_input.accel > 0) && (driver_input.controls & TRACTION))
-                Traction();
+                Traction();  
 
-            */
+            
             
             
             // u=-Kx=-[-1.5335 2.3662 7.2193 -3.7494;1.5081 -2.3269 -7.0995 3.6872]x;
@@ -76,21 +76,21 @@ void main(void)
             //roll rate=roll_angle(t)-roll_angle(t-1)
             
             
-            y1= ((INT8)((car.engineRPM & 0xFF00)>>8))/50;      //lat vel
+           /* y1= ((INT8)((car.engineRPM & 0xFF00)>>8))/50;      //lat vel
             y2= ((INT8)(car.yawRate))*(180/3.142)/20; // yaw rate
             y4= ((INT8)(car.engineRPM & 0xFF))/100; //roll angle (k)
             y3= y4-y4_prev;              // rollr rate (difference)
-            y4_prev=y4;
+            y4_prev=y4; */
             
             //y1=-0.10859*x1; y2=   1.231*x2; y3= -0.041089*x3; y4= 0.5834*x4
             
             //lqr
                                
-            brake_msg.brakeFL= limit(1.5335*(-y1/0.10859) -2.3662*(y2/1.231) -7.2193*(-y3/0.041089) +3.7494*(y4/0.5834),0,100);
+            /*brake_msg.brakeFL= limit(1.5335*(-y1/0.10859) -2.3662*(y2/1.231) -7.2193*(-y3/0.041089) +3.7494*(y4/0.5834),0,100);
             brake_msg.brakeRL=brake_msg.brakeFL;
             
             brake_msg.brakeFR= limit(-1.5081*(-y1/0.10859) +2.3269*(y2/1.231) +7.0995*(-y3/0.041089) -3.6872*(y4/0.5834),0,100);
-            brake_msg.brakeRR=brake_msg.brakeFR;
+            brake_msg.brakeRR=brake_msg.brakeFR; */
             
             CANTx(CAN_ACCEL_CORR_MSG_ID,&accel_corr,sizeof(AccelMsg));
             CANTx(CAN_BRAKE_MSG_ID,&brake_msg,sizeof(BrakeMsg));

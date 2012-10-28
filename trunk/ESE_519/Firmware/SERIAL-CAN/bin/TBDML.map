@@ -28,7 +28,7 @@ Entry point: 0xC000 (_Startup)
 _startupData is allocated at 0xC00B and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x500     33
+  _Range   pZeroOut       0x500     34
   _Copy    *toCopyDownBeg 0xC155
 } _startupData;
 
@@ -266,12 +266,12 @@ NON_BANKED                       320     R     0xC015     0xC154   ROM_C000
 .abs_section_ffd6                  2     R     0xFFD6     0xFFD7   .absSeg221
 .abs_section_ffb2                  2     R     0xFFB2     0xFFB3   .absSeg222
 .bss                               8   R/W      0x500      0x507   RAM
-.common                           25   R/W      0x508      0x520   RAM
+.common                           26   R/W      0x508      0x521   RAM
 .vectSeg223_vect                   2     R     0xFFFE     0xFFFF   .vectSeg223
 
 Summary of section sizes per section type:
 READ_ONLY (R):         347 (dec:      839)
-READ_WRITE (R/W):      121 (dec:      289)
+READ_WRITE (R/W):      122 (dec:      290)
 NO_INIT (N/I):         104 (dec:      260)
 
 *********************************************************************************************
@@ -526,7 +526,7 @@ MODULE:                 -- main.c.o --
      _Vector_38                                FFB2       2       2       0   .abs_section_ffb2
      carInputs                                  508       6       6       3   .common     
      serialRxBuffer                             50E       6       6       2   .common     
-     params                                     514       C      12       3   .common     
+     params                                     514       D      13       3   .common     
 MODULE:                 -- Start12.c.o --
 - PROCEDURES:
      Init                                    38804A      29      41       2   .text       
@@ -555,7 +555,7 @@ MODULE:                 -- SCI.c.o --
      SCITx                                   388169       F      15       2   .text       
      SCITxPkt                                388178      5F      95       2   .text       
 - VARIABLES:
-     SCIDataFlag                                520       1       1       1   .common     
+     SCIDataFlag                                521       1       1       1   .common     
 MODULE:                 -- PLL.c.o --
 - PROCEDURES:
      setclk24                                3881D7      13      19       4   .text       
@@ -566,7 +566,7 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   MC9S12C128.c.o                             260      0      0
-  main.c.o                                    32    374      4
+  main.c.o                                    33    374      4
   Start12.c.o                                  0     52      0
   STRING.C.o (ansibi.lib)                      0     36      0
   rtshc12.c.o (ansibi.lib)                     0     20      0
@@ -1270,8 +1270,8 @@ OBJECT LIST SORTED BY ADDRESS
      rxPtr.4                                    506       2       2       4   .bss        
      carInputs                                  508       6       6       3   .common     
      serialRxBuffer                             50E       6       6       2   .common     
-     params                                     514       C      12       3   .common     
-     SCIDataFlag                                520       1       1       1   .common     
+     params                                     514       D      13       3   .common     
+     SCIDataFlag                                521       1       1       1   .common     
      _Startup                                  C000       B      11       0   .init       
      SCIRx_vect                                C015      A4     164       1   NON_BANKED  
      CANRx_vect                                C0B9      88     136       1   NON_BANKED  
