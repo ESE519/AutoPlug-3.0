@@ -38,14 +38,15 @@ INT8 CANTx(UINT16 identifier, void *data, UINT8 length)
     UINT8 *dataPtr;
     UINT8  txBuf;
 
-    if(!CANTFLG)
+    if(!CANTFLG){
+        printf("Totally doomed");
         return -1;  // All TX buffers full
-
-    if(length > 9){   // Changed from 9 to 10 for new distance calculation
-       //printf("Tx Doom");
+    }
+    if(length > 8){   // Changed from 9 to 10 for new distance calculation
+        printf("Tx Doom");
         return -1;
     }
-    //printf("Tx Not Doomed");
+    printf("Tx Not Doomed");
     CANTBSEL = CANTFLG;
 
     txBuf = CANTBSEL;
@@ -67,6 +68,7 @@ INT8 CANTx(UINT16 identifier, void *data, UINT8 length)
 
     while( (CANTFLG & txBuf) != txBuf ) ;
 
+    printf("\n RETURN \n ");
     return length;
 }
 
@@ -79,7 +81,7 @@ INT8 CANRx(UINT16 *identifier, void *buffer)
 
     if(!CANRFLG_RXF) // If data received
     {
-        //printf("Rx screwed");
+       // printf("Rx screwed");
         return -1;
     }   
      //printf("Rx Not Screwed");

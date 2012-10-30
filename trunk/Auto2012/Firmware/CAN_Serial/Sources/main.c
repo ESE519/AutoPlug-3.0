@@ -17,11 +17,12 @@
 
 CarParams carParams;  //speed | engineRPM | wheel speed (FL,FR,RL,RR) | yaw rate
 StabMsg stabmsg;  //lateral speed  |  lateral acceleration
+CarDistance carDistance;
 volatile TorcsInput torcsInput; //accel | brake (FL,FR,RL,RR) | steer | gear | clutch
 volatile UINT8 carInputsUpdated = 0;
 volatile UINT8 carParamsUpdated = 0;
 
-UINT8 serialRxBuffer[sizeof(CarParams) + sizeof(StabMsg)];
+UINT8 serialRxBuffer[sizeof(CarParams) + sizeof(CarDistance)]; // Changed here from stable message to car distance
 
 void init(void);
 
@@ -67,7 +68,7 @@ interrupt 20 void SCIRx_vect(void)   //receive messages from serial port
         case 1:
             if(serialData == 0xCC && serialRxState == 1)
             {
-                serialDataLength = sizeof(CarParams);/// + 1;    //Changed by AAK
+                serialDataLength = sizeof(CarParams) + sizeof(CarDistance);    //Changed by AAK
                 serialRxChksum ^= 0xCC;
                 rxPtr = serialRxBuffer;
                 serialRxState = 2;
@@ -84,23 +85,28 @@ interrupt 20 void SCIRx_vect(void)   //receive messages from serial port
         case 2:
             if(serialDataLength > 0)      //copy data to serial buffer
             {
-                //printf("\n SLength %d \n\r ", serialDataLength);
+              //  printf("\n Serial:    %x \n\r ", serialData);
                 *rxPtr = serialData;
                 serialRxChksum ^= serialData;
+               
                 rxPtr++;     
                 serialDataLength--;
-                //printf("Two");
+              //  printf("Two");
             }
             else
             {
+              //  printf("\n Serial Data is %d \n " ,  serialData);
+               // printf("\n Checksum is %d \n " ,  serialRxChksum);
+               // printf("\n Difference in checksum is %d \n " ,  serialData - serialRxChksum);
+                //printf("foo");
                 if(serialData == serialRxChksum)
                 {
-                    //printf("2else");
+                    printf("\n HOLLA");
                     if(!carParamsUpdated) // Only update when old value has been used
                     {
-                        //printf("Params created");
+                        printf("Params created");
                         memcpy(&carParams, serialRxBuffer, sizeof(CarParams));
-                        //memcpy(&stabmsg, serialRxBuffer + 8, sizeof(StabMsg));
+                       // memcpy(&carDistance, serialRxBuffer + 8, sizeof(CarDistance));
                         carParamsUpdated = 1;
                     }
                 }
@@ -121,8 +127,9 @@ interrupt 38 void CANRx_vect(void)     //receive messages via CAN bus
 
     if(identifier == CAN_INPUT_MSG_ID)     //messages from wiimote
     {
+        
         CarInputs carInputs;
-
+         printf("\nInput Message\n ");
         if(length > sizeof(CarInputs))
             length = sizeof(CarInputs);
 
@@ -132,8 +139,9 @@ interrupt 38 void CANRx_vect(void)     //receive messages via CAN bus
     }
     else if(identifier == CAN_BRAKE_MSG_ID) //messages from ABS ECU (brake message)
     {
+        
         BrakeMsg brakeMsg;
-
+         printf("\n Brake MSG\n ");
         if(length > sizeof(BrakeMsg))
             length = sizeof(BrakeMsg);
 
@@ -146,7 +154,9 @@ interrupt 38 void CANRx_vect(void)     //receive messages via CAN bus
     }
     else if(identifier == CAN_ACCEL_MSG_ID) //corrected acceleration messages
     {
+        
         AccelMsg accelMsg;
+        printf("\n Accel MSG \n ");
         if(length > sizeof(AccelMsg))
             length = sizeof(AccelMsg);
 
@@ -176,9 +186,10 @@ void main(void)
         //putchar('H');
         if(carParamsUpdated)   //send simulator's data on CAN bus
         {
+             printf("\n Params made in TORCS gateway \n ");
             CANTx(CAN_PARAM_MSG_ID, &carParams, sizeof(CarParams));
-            printf("Distance %d\n",carParams.distance);
-            //CANTx(CAN_STAB_MSG_ID, &stabmsg, sizeof(StabMsg));
+            //printf("Distance %c\n",carParams.distance);
+            //CANTx(CAN_DIST_MSG_ID, &carDistance, sizeof(CarDistance));
             carParamsUpdated = 0;
         }
 

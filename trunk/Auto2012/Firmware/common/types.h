@@ -1,6 +1,7 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
+#define CAN_DIST_MSG_ID  (0x78)  /* Distance between cars from torcs */
 #define CAN_PARAM_MSG_ID (0x70) /* Car params from simulator */
 #define CAN_INPUT_MSG_ID (0x60) /* Raw driver input */
 #define CAN_BRAKE_MSG_ID (0x61) /* Computed brake output */
@@ -23,7 +24,7 @@ typedef struct _CarParams
     INT8 wheelSpeedRL;
     INT8 wheelSpeedRR;
     INT8 yawRate;
-    INT8 distance;
+    //UINT8 distance;
     //INT8 lateralspeed;
     //INT8 lateralacc;
 } CarParams;
@@ -34,8 +35,13 @@ typedef struct _StabMsg
     INT8 lateralacc;
 } StabMsg;
 
-#define SERIAL_CAR_PARAMS_PKT_LENGTH (2 + sizeof(CarParams) + sizeof(StabMsg) + 1)
+typedef struct _CarDistance 
+{
+    INT8 distance;
+}CarDistance;
 
+#define SERIAL_CAR_PARAMS_PKT_LENGTH (2 + sizeof(CarParams) + sizeof(CarDistance) + 1)
+//#define SERIAL_CAR_PARAMS_PKT_LENGTH (sizeof(CarParams) + sizeof(CarDistance))
 typedef struct _CarInputs {
     UINT8 accel;
     UINT8 brake;

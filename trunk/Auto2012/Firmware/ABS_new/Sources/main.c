@@ -23,7 +23,7 @@ volatile UINT8 carParamsUpdated = 0;
 volatile UINT8 carInputsUpdated = 0;
 BrakeMsg brake_msg = {0,0,0,0};
 CarInputs driver_input = {0,0,0,0,0,0};
-UINT8 buffer[9]; // recives the CAN DATA   // changed from 8 to 9
+UINT8 buffer[8]; // recives the CAN DATA   // changed from 8 to 9
 const INT16 abs_threshold = 2;
 const INT16 tc_threshold = 2;
 const INT16 yawRate_threshold = 10;

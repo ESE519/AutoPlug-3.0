@@ -42,7 +42,7 @@ INT8 CANTx(UINT16 identifier, void *data, UINT8 length)
         printf("\n Tx Screwed ");
         return -1;  // All TX buffers full
     }
-    if(length > 9){  // changed from 9 to 10 for new distance calculation
+    if(length > 8){  // changed from 9 to 10 for new distance calculation
         printf("Doom\n");
         return -1;
     }
