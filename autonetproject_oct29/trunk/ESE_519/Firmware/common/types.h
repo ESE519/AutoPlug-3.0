@@ -1,14 +1,14 @@
 #ifndef _TYPES_H
 #define _TYPES_H
 
-#define CAN_DIST_MSG_ID (0x78) /* Car Distance from params */
+
 #define CAN_PARAM_MSG_ID (0x70) /* Car params from simulator */
 #define CAN_INPUT_MSG_ID (0x60) /* Raw driver input */
 #define CAN_BRAKE_MSG_ID (0x61) /* Computed brake output */
 #define CAN_ACCEL_MSG_ID (0x62) /* Computed accel, gear and clutch values */
 #define CAN_ACCEL_CORR_MSG_ID (0x80) /* Accelerator correction from EBCM to ECM for TC */
 #define CAN_STAB_MSG_ID (0x84) /* Used for stability control */
-
+#define CAN_DIST_MSG_ID (0x78) /* Car Distance from params */
 
 #define STABILITY (0x08)
 #define ABS       (0x04)

@@ -16,7 +16,7 @@
 #define KI_NUM (1)
 #define KI_DEN (20)
 
-#define KP_BRAKE_NUM (10)
+#define KP_BRAKE_NUM (5)
 #define KP_BRAKE_DEN (1)
 #define KI_BRAKE_NUM (1)
 #define KI_BRAKE_DEN (20)
@@ -36,7 +36,9 @@ CarDistance carDistance;
 
 volatile UINT8 carInputsUpdated = 0;
 volatile UINT8 carParamsUpdated = 0;
-volatile UINT8 accelCorrection = 0;
+volatile UINT8 accelCorrection =  0;
+volatile UINT8 accelCorrection1 = 50;
+//volatile UINT8 setSpeed = 0;
 
 const Car car = {
     {0, 3.9*4.5, 2.9*4.5, 2.3*4.5, 1.87*4.5, 1.68*4.5, 1.54*4.5, 1.46*4.5},
@@ -114,34 +116,30 @@ void main(void)
 
                 gear = (UINT8) limit(getGear(gear), 0, 7);
 
-                accelMsg.accel = (UINT8)limit(accel - accelCorrection, 0, 100) ;
+                accelMsg.accel = (UINT8)limit(accel - accelCorrection1, 0, 100) ;
                 accelMsg.gear = gear;
                 accelMsg.clutch = 0;
+                
                 
                 controlOutput1 = KP_BRAKE_NUM*error/KP_BRAKE_DEN + KP_BRAKE_NUM*errInteg/KP_BRAKE_DEN;
                 controlOutput1 = limit(controlOutput1, 0, 100);
 
                 brake = (UINT8) controlOutput1; 
                 //For braking in ACC
-                brake_msg.brakeFL = (UINT8)limit(accel - accelCorrection, 0, 100) ;
-                brake_msg.brakeFR = (UINT8)limit(accel - accelCorrection, 0, 100) ;
-                brake_msg.brakeRL = (UINT8)limit(accel - accelCorrection, 0, 100) ;
+                brake_msg.brakeFL = (UINT8)limit(brake - accelCorrection, 0, 100) ;
+                brake_msg.brakeFR = (UINT8)limit(brake - accelCorrection, 0, 100) ;
+                brake_msg.brakeRL = (UINT8)limit(brake - accelCorrection, 0, 100) ;
                 brake_msg.brakeRR = (UINT8)limit(brake - accelCorrection, 0, 100) ; 
                 
-                
-            }
-           //For sending brake message only 
-                
-                 if(( carParams.speed > setSpeed)&(flag==1))           
+                if(( carParams.speed > setSpeed)&&(flag==1))           
                  {
                     //CANTx(CAN_ACCEL_CORR_MSG_ID,&accel_corr,sizeof(AccelMsg));
                     CANTx(CAN_BRAKE_MSG_ID,&brake_msg,sizeof(BrakeMsg));
-                 } 
-                else 
-                {
+                 }  
+                
+            }
                     
-                    CANTx(CAN_ACCEL_MSG_ID, &accelMsg, sizeof(AccelMsg));
-                }
+            CANTx(CAN_ACCEL_MSG_ID, &accelMsg, sizeof(AccelMsg));
             carParamsUpdated = 0;
         }
         else if(carInputsUpdated)
@@ -157,18 +155,24 @@ void main(void)
                     PORTB = 0x70;
                     flag=1;
                 }
-                if(carDistance.distance < des_distance)
-                {
-                    timegap=(des_distance)/carParams.speed;
-                    des_speed=((carDistance.distance))/timegap;
-                    printf("des distance = %d",des_speed);
+                if(carDistance.distance < des_distance)             //When distance between the two cars goes below the 
+                {                                                   //desired limit, ACC kicks in by calculating the new speed
+                    timegap=(des_distance*8)/carParams.speed;         //from the desired timegap inorder to maintain clearance
+                    des_speed=((carDistance.distance)*8)/timegap;
+                    //printf("des distance = %d",des_speed);
                     setSpeed = des_speed;
                     flag=1;
                 } 
-                else
+                else if(carDistance.distance < des_distance)
                 {
-                    setSpeed=setSpeed1;
+                    setSpeed = des_speed;
+                }
+                else //if(carDistance.distance >(des_distance +3))                                                          //if car in front moves off go back to the speed when
+                {                                                              //cruise control was pressed
+                    setSpeed = setSpeed1;
+                   
                     flag=0;
+                   
                 } 
             }
             else

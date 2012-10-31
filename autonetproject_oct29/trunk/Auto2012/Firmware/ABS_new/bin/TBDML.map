@@ -27,7 +27,7 @@ Entry point: 0xC000 (_Startup)
 _startupData is allocated at 0xC00B and uses 6 Bytes
 extern struct _tagStartup {
   unsigned nofZeroOut     1
-  _Range   pZeroOut       0x500     23
+  _Range   pZeroOut       0x500     24
   _Copy    *toCopyDownBeg 0xC07F
 } _startupData;
 
@@ -264,12 +264,12 @@ NON_BANKED                       106     R     0xC015     0xC07E   ROM_C000
 .abs_section_17e                   2   N/I      0x17E      0x17F   .absSeg220
 .abs_section_ffb2                  2     R     0xFFB2     0xFFB3   .absSeg221
 .bss                              12   R/W      0x500      0x50B   RAM
-.common                           11   R/W      0x50C      0x516   RAM
+.common                           12   R/W      0x50C      0x517   RAM
 .vectSeg222_vect                   2     R     0xFFFE     0xFFFF   .vectSeg222
 
 Summary of section sizes per section type:
 READ_ONLY (R):         3DD (dec:      989)
-READ_WRITE (R/W):      117 (dec:      279)
+READ_WRITE (R/W):      118 (dec:      280)
 NO_INIT (N/I):         104 (dec:      260)
 
 *********************************************************************************************
@@ -520,8 +520,8 @@ MODULE:                 -- main.c.o --
      brake_msg                                  502       4       4      23   .bss        
      driver_input                               506       6       6      10   .bss        
      _Vector_38                                FFB2       2       2       0   .abs_section_ffb2
-     car                                        50C       8       8      16   .common     
-     accel_corr                                 514       3       3       4   .common     
+     car                                        50C       9       9      16   .common     
+     accel_corr                                 515       3       3       4   .common     
 MODULE:                 -- Start12.c.o --
 - PROCEDURES:
      Init                                    388242      29      41       2   .text       
@@ -553,7 +553,7 @@ MODULE STATISTIC
   Name                                      Data   Code  Const
 ---------------------------------------------------------------------------------------------
   MC9S12C128.c.o                             260      0      0
-  main.c.o                                    23    684      2
+  main.c.o                                    24    684      2
   Start12.c.o                                  0     52      0
   STDLIB.C.o (ansib.lib)                       0     10      0
   STRING.C.o (ansib.lib)                       0     36      0
@@ -1249,8 +1249,8 @@ OBJECT LIST SORTED BY ADDRESS
      carInputsUpdated                           501       1       1       3   .bss        
      brake_msg                                  502       4       4      23   .bss        
      driver_input                               506       6       6      10   .bss        
-     car                                        50C       8       8      16   .common     
-     accel_corr                                 514       3       3       4   .common     
+     car                                        50C       9       9      16   .common     
+     accel_corr                                 515       3       3       4   .common     
      _Startup                                  C000       B      11       0   .init       
      CANRx_vect                                C015      6A     106       1   NON_BANKED  
      _Vector_38                                FFB2       2       2       0   .abs_section_ffb2
