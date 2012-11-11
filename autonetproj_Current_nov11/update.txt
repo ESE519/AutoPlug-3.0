@@ -1,0 +1,3 @@
+OCT 4:
+Has the code for 2 cars controlled by wii mote .
+Works finely except for serial receive
